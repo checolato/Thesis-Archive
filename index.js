@@ -82,7 +82,7 @@ document.addEventListener("DOMContentLoaded", () => {
       introScreen.classList.add("fade-out");
 
       setTimeout(() => {
-        window.location.href = "index.html"; // your home page
+        window.location.href = "home.html"; // your home page
       }, 1200); // match your fade-out duration
     });
   }
