@@ -747,3 +747,18 @@ body:not(.env-atmos) .air-lens {
   opacity: 0;
 }
 
+#project-preview {
+  position: absolute;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+#project-preview img {
+  width: 260px;
+  height: auto;
+  display: block;
+  border-radius: 4px;
+}
+
