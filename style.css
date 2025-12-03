@@ -75,7 +75,7 @@
 }
 
 .dissolve-char {
-  animation: char-dissolve 5.5s ease-out forwards;
+  animation: char-dissolve 25s ease-out forwards;
 }
 
 @keyframes char-dissolve {
