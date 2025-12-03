@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Project – Reflective City</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <header class="site-header">
+    <a href="index.html" class="site-title">Reflective City</a>
+    <a href="index.html" class="site-about">(Archive)</a>
+  </header>
+
+  <div class="project-layout">
+
+    <!-- LEFT: big canvas with image -->
+    <main class="project-main">
+      <div class="project-frame">
+        <img id="project-image" src="" alt="">
+      </div>
+      <p id="project-credit" class="project-credit"></p>
+    </main>
+
+    <!-- RIGHT: metadata + list -->
+    <aside class="project-sidebar">
+      <header class="project-meta">
+        <div class="project-meta-title">
+          <span class="project-arrow">→</span>
+          <span id="project-title">Project title</span>
+        </div>
+        <div class="project-meta-sub">
+          <span id="project-season"></span><br>
+          <span id="project-filed"></span>
+        </div>
+        <p id="project-description" class="project-description"></p>
+      </header>
+
+      <nav class="project-list-wrap">
+        <h2 class="project-list-heading" id="project-list-heading">Projects</h2>
+        <ul id="project-list" class="link-list link-list-tight">
+          <!-- filled by JS -->
+        </ul>
+      </nav>
+    </aside>
+
+  </div>
+
+  <script src="js/projects.js"></script>
+</body>
+</html>

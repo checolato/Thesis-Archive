@@ -1,0 +1,132 @@
+/* ---------------------------------------
+   GLOBAL RESET / BASE
+--------------------------------------- */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  /* Use a clean, default sans-serif font like Arial or Helvetica */
+  font-family: apple-system, BlinkMacSystemFont, system-ui, sans-serif; 
+  color: #111;
+  min-height: 100vh;
+  overflow-x: hidden;
+  
+  /* Retain the background settings for the ripple effect 
+     (Assume you've swapped to a high-contrast image or used a fix like Option 2) */
+  background: #000000 url("images/water-glass.jpg") center center / cover fixed no-repeat;
+}
+
+/* ---------------------------------------
+   HEADER (Kept for layout context)
+--------------------------------------- */
+.site-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 40px;
+  padding: 10px 24px 0;
+  font-size: 13px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  background: rgba(255, 255, 255, 0);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 10;
+}
+
+.site-title,
+.site-about {
+  text-decoration: none;
+  color: #111;
+}
+
+/* ---------------------------------------
+   PAGE LAYOUT
+--------------------------------------- */
+.page {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 100px 40px 80px; 
+  position: relative;
+  z-index: 1;
+
+  /* FIX: Ensure your content panel is light and transparent for readability */
+  background: rgba(255, 255, 255, 0.85); 
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+.page.page-index {
+  /* This is now handled by the .page rule above */
+  background: transparent; 
+}
+
+/* ---------------------------------------
+   INDEX PAGE — TYPOGRAPHY AND LAYOUT
+--------------------------------------- */
+.columns {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(150px, 1fr));
+  column-gap: 40px;
+  margin-top: 40px;
+  font-size: 14px;
+}
+
+/* ➡️ COLUMN HEADERS (e.g., "Web", "Graphic Design") */
+.column h2 {
+  font-size: 14px;
+  font-weight: bold; /* Make the titles bold */
+  text-transform: uppercase; /* Use all caps for the column header */
+  letter-spacing: 0.1em; /* Add slight spacing */
+  margin: 0 0 10px; /* Space below the header */
+  position: relative;
+  padding-bottom: 2px;
+}
+
+/* ❌ REMOVE the "waterline" under section titles */
+.column h2::after {
+  content: none;
+}
+
+
+/* ---------------------------------------
+   LINK LIST (List Items)
+--------------------------------------- */
+.link-list,
+.link-list-tight {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 12px;
+  font-size: 14px; /* Default size for links */
+  line-height: 1.4;
+}
+
+/* ➡️ LIST LINKS: Use dotted line for separation */
+.link-list a,
+.link-list-tight li a {
+  position: relative;
+  display: block;
+  padding: 4px 0; /* Add padding for separation */
+  text-decoration: none;
+  color: inherit;
+  
+  /* Dotted line at the bottom, matching the image's style */
+  border-bottom: 1px dotted rgba(0, 0, 0, 0.4); 
+  
+  transition: all 0.2s ease;
+}
+
+/* ➡️ LIST HOVER: Remove complex watery effects for a cleaner, simpler hover */
+.link-list a:hover,
+.link-list-tight li a:hover {
+  border-bottom-style: solid;
+  border-bottom-color: rgba(0, 0, 0, 0.8); /* Solid black underline */
+  background: none; /* No background color change */
+  box-shadow: none; /* No box shadow */
+  text-shadow: none; /* No text shadow */
+  transform: none; /* No movement on hover */
+}
