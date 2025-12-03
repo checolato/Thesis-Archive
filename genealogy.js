@@ -76,15 +76,31 @@ $(function () {
   // -----------------------------------------------
 
   // Split all spatial titles into characters
-  $('.water-spatial .blend-text').each(function () {
-    let text = $(this).text().trim();
-    let html = '';
-    for (let i = 0; i < text.length; i++) {
-      let ch = text[i] === ' ' ? '&nbsp;' : text[i];
-      html += `<span class="char">${ch}</span>`;
+  // Split all spatial titles into characters (preserve <br>)
+$('.water-spatial .blend-text').each(function () {
+  // Get raw HTML so we can see <br>
+  let rawHtml = $(this).html().trim();
+
+  // Turn <br> into newline markers
+  rawHtml = rawHtml.replace(/<br\s*\/?>/gi, '\n');
+
+  let html = '';
+
+  for (let i = 0; i < rawHtml.length; i++) {
+    const rawCh = rawHtml[i];
+
+    // Put real <br> back in
+    if (rawCh === '\n') {
+      html += '<br>';
+      continue;
     }
-    $(this).html(html);
-  });
+
+    const ch = rawCh === ' ' ? '&nbsp;' : rawCh;
+    html += `<span class="char">${ch}</span>`;
+  }
+
+  $(this).html(html);
+});
 
   // When hovering over a spatial item (letters run away from mouse)
   $('.water-spatial a').on('mousemove', function (e) {
@@ -120,21 +136,39 @@ $(function () {
   // -----------------------------------------------
   // 5. ECOLOGICAL–CULTURAL: CENTERED RIPPLE BLEND
   // -----------------------------------------------
+  // Split all ecological titles into characters (preserve <br>)
+// and store "distance from center" for ripple timing
+$('.water-eco .blend-text').each(function () {
+  let rawHtml = $(this).html().trim();
+  rawHtml = rawHtml.replace(/<br\s*\/?>/gi, '\n');
 
-  // Split all ecological titles into characters and store "distance from center"
-  $('.water-eco .blend-text').each(function () {
-    let text = $(this).text().trim();
-    let html = '';
-    const len = text.length;
-    const center = (len - 1) / 2; // middle index (can be .5)
+  // First pass: count only visible letters (no newlines)
+  let letterCount = 0;
+  for (const c of rawHtml) {
+    if (c !== '\n') letterCount++;
+  }
+  const center = (letterCount - 1) / 2;
 
-    for (let i = 0; i < len; i++) {
-      let ch = text[i] === ' ' ? '&nbsp;' : text[i];
-      const dist = Math.abs(i - center); // distance from center
-      html += `<span class="char" style="--ecoDist:${dist}">${ch}</span>`;
+  // Second pass: build spans, reinsert <br>, assign --ecoDist
+  let html = '';
+  let index = 0; // index over letters only
+
+  for (const rawCh of rawHtml) {
+    if (rawCh === '\n') {
+      html += '<br>';
+      continue;
     }
-    $(this).html(html);
-  });
+
+    const dist = Math.abs(index - center);
+    const ch = rawCh === ' ' ? '&nbsp;' : rawCh;
+
+    html += `<span class="char" style="--ecoDist:${dist}">${ch}</span>`;
+    index++;
+  }
+
+  $(this).html(html);
+});
+
 
   // Eco ripple on hover is handled purely in CSS using --ecoDist
   // (no extra JS needed here)

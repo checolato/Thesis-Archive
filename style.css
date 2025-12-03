@@ -703,3 +703,8 @@ body.env-eco .genealogy-list .water-eco a:hover {
   background-size: auto !important;
 }
 
+.page.page-about {
+  background: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
