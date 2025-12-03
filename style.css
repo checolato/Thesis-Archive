@@ -708,3 +708,41 @@ body.env-eco .genealogy-list .water-eco a:hover {
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
 }
+
+/* ---------------------------------------
+   ATMOSPHERIC INTERFACE — air distortion lens
+--------------------------------------- */
+
+.air-lens {
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9; /* above page content, below header */
+
+  /* “Refraction” look */
+  background:
+    radial-gradient(circle at 30% 30%, rgba(255,255,255,0.35), transparent 60%),
+    radial-gradient(circle at 70% 70%, rgba(255,255,255,0.18), transparent 65%);
+  mix-blend-mode: screen;
+
+  backdrop-filter: blur(6px) saturate(120%);
+  -webkit-backdrop-filter: blur(6px) saturate(120%);
+
+  opacity: 0;
+  transform: translate(-50%, -50%);
+  transition: opacity 0.25s ease;
+}
+
+/* only visible when active and in Atmospheric env */
+body.env-atmos .air-lens.is-active {
+  opacity: 0.9;
+}
+
+/* if you want the lens completely off in other envs */
+body:not(.env-atmos) .air-lens {
+  opacity: 0;
+}

@@ -16,14 +16,15 @@ $(function () {
   const $body = $('body');
   const envClasses = 'env-spatial env-eco env-temporal env-sensory env-atmos';
 
+  // Air distortion lens element (for Atmospheric category)
+  const $airLens = $('<div class="air-lens"></div>').appendTo('body');
+
   // ------------------------------------
   // 2. SENSORY FIELD BACKGROUND AUDIO
   // ------------------------------------
-  // Put your sound file at: /sounds/water-loop.mp3
-  // or change the path below to match your file name.
   const sensorySound = new Audio('sounds/water-loop.mp3');
   sensorySound.loop = true;
-  sensorySound.volume = 0.4; // adjust 0.0–1.0
+  sensorySound.volume = 0.4; // adjust 0–1
 
   let soundOn = false;
 
@@ -31,8 +32,7 @@ $(function () {
     if ($body.hasClass('env-sensory')) {
       if (!soundOn) {
         sensorySound.play().catch(() => {
-          // Browser might block autoplay until a user gesture;
-          // since this is triggered by tab click, it should usually be fine.
+          // ignore autoplay errors
         });
         soundOn = true;
       }
@@ -58,6 +58,11 @@ $(function () {
     if (env === 'atmos')    $body.addClass('env-atmos');
 
     updateSensorySound();
+
+    // Hide air lens when not in Atmospheric mode
+    if (env !== 'atmos') {
+      $airLens.removeClass('is-active');
+    }
   }
 
   // Default environment: Spatial
@@ -75,32 +80,31 @@ $(function () {
   // 4. LETTER ESCAPE EFFECT FOR SPATIAL ORGANIZER
   // -----------------------------------------------
 
-  // Split all spatial titles into characters
   // Split all spatial titles into characters (preserve <br>)
-$('.water-spatial .blend-text').each(function () {
-  // Get raw HTML so we can see <br>
-  let rawHtml = $(this).html().trim();
+  $('.water-spatial .blend-text').each(function () {
+    // Get raw HTML so we can see <br>
+    let rawHtml = $(this).html().trim();
 
-  // Turn <br> into newline markers
-  rawHtml = rawHtml.replace(/<br\s*\/?>/gi, '\n');
+    // Turn <br> into newline markers
+    rawHtml = rawHtml.replace(/<br\s*\/?>/gi, '\n');
 
-  let html = '';
+    let html = '';
 
-  for (let i = 0; i < rawHtml.length; i++) {
-    const rawCh = rawHtml[i];
+    for (let i = 0; i < rawHtml.length; i++) {
+      const rawCh = rawHtml[i];
 
-    // Put real <br> back in
-    if (rawCh === '\n') {
-      html += '<br>';
-      continue;
+      // Put real <br> back in
+      if (rawCh === '\n') {
+        html += '<br>';
+        continue;
+      }
+
+      const ch = rawCh === ' ' ? '&nbsp;' : rawCh;
+      html += `<span class="char">${ch}</span>`;
     }
 
-    const ch = rawCh === ' ' ? '&nbsp;' : rawCh;
-    html += `<span class="char">${ch}</span>`;
-  }
-
-  $(this).html(html);
-});
+    $(this).html(html);
+  });
 
   // When hovering over a spatial item (letters run away from mouse)
   $('.water-spatial a').on('mousemove', function (e) {
@@ -112,8 +116,10 @@ $('.water-spatial .blend-text').each(function () {
 
     $(this).find('.char').each(function () {
       const letterBounds = this.getBoundingClientRect();
-      const centerX = letterBounds.left - bounds.left + letterBounds.width / 2;
-      const centerY = letterBounds.top - bounds.top + letterBounds.height / 2;
+      const centerX =
+        letterBounds.left - bounds.left + letterBounds.width / 2;
+      const centerY =
+        letterBounds.top - bounds.top + letterBounds.height / 2;
 
       // direction from mouse → letter
       let dx = centerX - mouseX;
@@ -136,48 +142,62 @@ $('.water-spatial .blend-text').each(function () {
   // -----------------------------------------------
   // 5. ECOLOGICAL–CULTURAL: CENTERED RIPPLE BLEND
   // -----------------------------------------------
-  // Split all ecological titles into characters (preserve <br>)
-// and store "distance from center" for ripple timing
-$('.water-eco .blend-text').each(function () {
-  let rawHtml = $(this).html().trim();
-  rawHtml = rawHtml.replace(/<br\s*\/?>/gi, '\n');
 
-  // First pass: count only visible letters (no newlines)
-  let letterCount = 0;
-  for (const c of rawHtml) {
-    if (c !== '\n') letterCount++;
-  }
-  const center = (letterCount - 1) / 2;
+  // Split ecological titles into characters (preserve <br>)
+  // and store "distance from center" for ripple timing
+  $('.water-eco .blend-text').each(function () {
+    let rawHtml = $(this).html().trim();
+    rawHtml = rawHtml.replace(/<br\s*\/?>/gi, '\n');
 
-  // Second pass: build spans, reinsert <br>, assign --ecoDist
-  let html = '';
-  let index = 0; // index over letters only
+    // First pass: count only visible letters (no newlines)
+    let letterCount = 0;
+    for (const c of rawHtml) {
+      if (c !== '\n') letterCount++;
+    }
+    const center = (letterCount - 1) / 2;
 
-  for (const rawCh of rawHtml) {
-    if (rawCh === '\n') {
-      html += '<br>';
-      continue;
+    // Second pass: build spans, reinsert <br>, assign --ecoDist
+    let html = '';
+    let index = 0; // index over letters only
+
+    for (const rawCh of rawHtml) {
+      if (rawCh === '\n') {
+        html += '<br>';
+        continue;
+      }
+
+      const dist = Math.abs(index - center);
+      const ch = rawCh === ' ' ? '&nbsp;' : rawCh;
+
+      html += `<span class="char" style="--ecoDist:${dist}">${ch}</span>`;
+      index++;
     }
 
-    const dist = Math.abs(index - center);
-    const ch = rawCh === ' ' ? '&nbsp;' : rawCh;
+    $(this).html(html);
+  });
 
-    html += `<span class="char" style="--ecoDist:${dist}">${ch}</span>`;
-    index++;
-  }
-
-  $(this).html(html);
-});
-
-
-  // Eco ripple on hover is handled purely in CSS using --ecoDist
-  // (no extra JS needed here)
+  // Ripple animation itself is handled in CSS using --ecoDist
 
   // -----------------------------------------------
-  // 6. (OPTIONAL) TEMPORAL / ATMOS / SENSORY TEXT FX
+  // 6. ATMOSPHERIC — AIR DISTORTION LENS
   // -----------------------------------------------
-  // Any extra text effects for temporal, sensory, or atmos categories
-  // can be kept CSS-only (using .env-temporal, .env-sensory, .env-atmos)
-  // so no more JS is required here.
 
+  $('.water-atmos a').on('mousemove', function (e) {
+    if (!$body.hasClass('env-atmos')) return; // only in Atmospheric mode
+
+    $airLens.addClass('is-active');
+    $airLens.css({
+      left: e.clientX + 'px',
+      top:  e.clientY + 'px'
+    });
+  });
+
+  $('.water-atmos a').on('mouseleave', function () {
+    $airLens.removeClass('is-active');
+  });
+
+  // -----------------------------------------------
+  // 7. (OPTIONAL) TEMPORAL / SENSORY TEXT FX
+  // -----------------------------------------------
+  // These are currently handled in CSS only via :hover
 });
