@@ -148,8 +148,6 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  background: rgba(255, 255, 255, 0);
-  backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   z-index: 10;
 }
@@ -188,7 +186,7 @@ body {
 
 .columns {
   display: grid;
-  grid-template-columns: repeat(4, minmax(150px, 1fr));
+  grid-template-columns: repeat(3, minmax(150px, 1fr));
   column-gap: 40px;
   margin-top: 40px;
   font-size: 14px;
@@ -349,3 +347,287 @@ body {
   }
 }
 
+/* ---------------------------------------
+   GENEALOGY PAGE LAYOUT
+--------------------------------------- */
+
+.page-genealogy {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 100px 40px 80px;
+  position: relative;
+  z-index: 1;
+  background: rgba(255, 255, 255, 0);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+.genealogy-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(0, 2fr);
+  column-gap: 40px;
+}
+
+.genealogy-intro h1 {
+  font-size: 18px;
+  margin: 0 0 8px;
+}
+
+/* no more paragraph needed */
+
+/* Tabs + label directly under title */
+.genealogy-header {
+  margin-top: 0;
+}
+
+.genealogy-label {
+  display: block;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #777;
+  margin-bottom: 4px;
+}
+
+/* Make pond environment buttons vertical */
+.genealogy-env-tabs {
+  display: flex;
+  flex-direction: column;   /* stack vertically */
+  gap: 6px;                 /* spacing between buttons */
+  margin-top: 6px;
+}
+
+
+.env-tab {
+  border: 1px solid rgba(0,0,0,0.18);
+  background: rgba(255,255,255,0.7);
+  font-size: 11px;
+  padding: 4px 8px;
+  border-radius: 999px;
+  cursor: pointer;
+  color: #333;
+  width: auto;
+  display: block;
+  align-self: flex-start;   /* stops stretch */
+}
+
+.env-tab.is-active {
+  background: #111;
+  color: #fff;
+}
+
+/* Project list column */
+.genealogy-projects .link-list {
+  margin-top: 8px;
+}
+
+/* Disable default blend hover on genealogy so we can customize per env */
+.genealogy-list a:hover .blend-text {
+  filter: none;
+  opacity: 1;
+}
+
+/* Disabled items when env is active */
+.genealogy-list li.is-disabled a {
+  color: rgba(0,0,0,0.3);
+  border-color: rgba(0,0,0,0.15);
+  pointer-events: none;
+}
+
+/* Grey-out logic: only active category is interactive per env */
+body.env-spatial .genealogy-list li:not(.water-spatial),
+body.env-eco .genealogy-list li:not(.water-eco),
+body.env-temporal .genealogy-list li:not(.water-temporal),
+body.env-sensory .genealogy-list li:not(.water-sensory),
+body.env-atmos .genealogy-list li:not(.water-atmos) {
+  opacity: 0.4;
+}
+
+body.env-spatial .genealogy-list li:not(.water-spatial) a,
+body.env-eco .genealogy-list li:not(.water-eco) a,
+body.env-temporal .genealogy-list li:not(.water-temporal) a,
+body.env-sensory .genealogy-list li:not(.water-sensory) a,
+body.env-atmos .genealogy-list li:not(.water-atmos) a {
+  color: rgba(0,0,0,0.3);
+  pointer-events: none;
+}
+
+/* CATEGORY-SPECIFIC HOVERS (only when env active) */
+
+/* 1. Spatial Organizer – move like flow */
+body.env-spatial .genealogy-list .water-spatial a {
+  transition: transform 0.25s ease;
+}
+body.env-spatial .genealogy-list .water-spatial a:hover {
+  transform: translateX(4px);
+}
+
+/* 2. Ecological – ripple blend under text */
+body.env-eco .genealogy-list .water-eco a {
+  background-position: 50% 50%;
+  background-repeat: no-repeat;
+  background-size: 0% 0%;
+  transition: background-size 0.4s ease-out;
+  background-image: radial-gradient(circle, rgba(160, 210, 175, 0.363) 0%, transparent 60%);
+}
+body.env-eco .genealogy-list .water-eco a:hover {
+  background-size: 160% 160%;
+}
+body.env-eco .genealogy-list .water-eco a:hover .blend-text {
+  filter: blur(1px);
+  opacity: 0.75;
+}
+
+/* 3. Temporal – blends out/disappears */
+body.env-temporal .genealogy-list .water-temporal a:hover .blend-text {
+  opacity: 0;
+  filter: blur(2px);
+  transition: opacity 0.45s ease, filter 0.45s ease;
+}
+
+/* 4. Sensory – small visual cue, sound handled in JS */
+body.env-sensory .genealogy-list .water-sensory a:hover .blend-text {
+  filter: blur(1.2px);
+  opacity: 0.7;
+  text-shadow: 0 0 6px rgba(150,160,210,0.7);
+}
+
+/* 5. Atmospheric – foggy glow */
+body.env-atmos .genealogy-list .water-atmos a:hover .blend-text {
+  text-shadow: 0 0 4px rgba(255,255,255,0.7);
+}
+
+/* POND OVERLAY BACKGROUND ENVIRONMENTS */
+
+#overlay-wrapper {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  mix-blend-mode: soft-light;
+  opacity: 0;
+  transition: opacity 0.5s ease, background 0.5s ease, filter 0.5s ease;
+}
+
+body:not(.env-spatial):not(.env-eco):not(.env-temporal):not(.env-sensory):not(.env-atmos) #overlay-wrapper {
+  opacity: 0;
+  filter: none;
+}
+
+/* Spatial: directional */
+body.env-spatial #overlay-wrapper {
+  opacity: 1;
+  background:
+    radial-gradient(circle at 10% 20%, rgba(180, 220, 255, 0), transparent 65%),
+    linear-gradient(120deg, rgba(40, 80, 120, 0), transparent 60%);
+}
+
+/* Ecological: green ponds */
+body.env-eco .genealogy-list .water-eco a,
+body.env-eco .genealogy-list .water-eco a:hover {
+  background: none !important;
+  background-image: none !important;
+  background-size: auto !important;
+}
+
+/* Temporal: rising water */
+body.env-temporal #overlay-wrapper {
+  opacity: 1;
+  background:
+    linear-gradient(to top, rgba(90,130,190,0.5), transparent 60%);
+}
+
+/* Sensory: soft haze */
+body.env-sensory #overlay-wrapper {
+  opacity: 1;
+  background:
+    radial-gradient(circle at 50% 40%, rgba(200,210,235,0.6), transparent 70%);
+  filter: blur(2px);
+}
+
+/* Atmospheric: fog / scan lines */
+body.env-atmos #overlay-wrapper {
+  opacity: 1;
+  background-image:
+    repeating-linear-gradient(
+      0deg,
+      rgba(255,255,255,0.2),
+      rgba(255,255,255,0.2) 1px,
+      transparent 1px,
+      transparent 3px
+    );
+}
+
+/* Small responsive tweak */
+@media (max-width: 800px) {
+  .genealogy-layout {
+    grid-template-columns: 1fr;
+    row-gap: 24px;
+  }
+}
+
+#overlay-wrapper {
+  display: none;
+}
+
+/* ---------------------------------------
+   SPATIAL ORGANIZER — letters run away
+--------------------------------------- */
+
+body.env-spatial .water-spatial a .char {
+  display: inline-block;
+  transition: transform 0.25s ease-out;
+  position: relative;
+}
+
+body.env-spatial .water-spatial a {
+  position: relative;
+  display: inline-block;
+}
+
+/* ---------------------------------------
+   ECOLOGICAL–CULTURAL
+   Letters blend in a ripple on hover
+--------------------------------------- */
+
+body.env-eco .water-eco a .char {
+  display: inline-block;
+}
+
+/* blend-out ripple: fade + blur + tiny scale, then back */
+@keyframes eco-ripple-blend {
+  0% {
+    opacity: 1;
+    filter: blur(0px);
+    transform: scale(1);
+  }
+  40% {
+    opacity: 0.45;
+    filter: blur(2px);
+    transform: scale(1.03);
+  }
+  70% {
+    opacity: 0.2;
+    filter: blur(4px);
+    transform: scale(1.06);
+  }
+  100% {
+    opacity: 1;
+    filter: blur(0px);
+    transform: scale(1);
+  }
+}
+
+/* On hover, letters ripple from center outward */
+body.env-eco .genealogy-list .water-eco a:hover .char {
+  animation: eco-ripple-blend 0.8s ease-out forwards;
+  /* more distance from center = bigger delay → circular-ish ripple */
+  animation-delay: calc(var(--ecoDist, 0) * 0.04s);
+}
+
+body.env-eco .genealogy-list .water-eco a,
+body.env-eco .genealogy-list .water-eco a:hover {
+  background: none !important;
+  background-image: none !important;
+  background-size: auto !important;
+}
