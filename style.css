@@ -1,6 +1,135 @@
 /* ---------------------------------------
    GLOBAL RESET / BASE
 --------------------------------------- */
+/* Intro full-screen overlay */
+.intro-screen {
+  position: fixed;
+  inset: 0;
+  background: #fdfbf7;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 24px;
+  z-index: 9999;
+  overflow: hidden;
+  transition: opacity 1.2s ease;
+}
+
+/* Center block but left-align text */
+.intro-inner {
+  position: relative;
+  max-width: 780px;
+  width: 100%;
+}
+
+/* Handwriting font */
+.handwriting {
+  font-family: "Shadows Into Light", system-ui, sans-serif;
+}
+
+/* Title */
+.intro-title {
+  font-size: 28px;
+  font-weight: 500;
+  margin: 0 0 24px;
+  text-align: left;
+}
+
+/* Body text */
+.intro-body {
+  font-size: 15px;
+  line-height: 1.7;
+  text-align: left;
+}
+
+.intro-line {
+  margin: 0 0 14px;
+  white-space: pre-wrap;
+}
+
+/* -------------------------------- */
+/* RAIN (vertical drift only)        */
+/* -------------------------------- */
+
+.rain-layer {
+  position: absolute;
+  inset: -40px;
+  pointer-events: none;
+  opacity: 0.25;
+  background-image:
+    radial-gradient(rgba(255,255,255,0.3) 1px, transparent 1px);
+  background-size: 3px 40px;
+  animation: vertical-rain 1.8s linear infinite;
+  transition: opacity 1s ease;
+}
+
+@keyframes vertical-rain {
+  from { background-position: 0 -40px; }
+  to   { background-position: 0 40px; }
+}
+
+/* Turn the rain off during dissolve */
+.intro-screen.rain-off .rain-layer {
+  opacity: 0;
+  animation: none;
+}
+
+/* -------------------------------- */
+/* TEXT DISSOLVE / BLUR OUT         */
+/* -------------------------------- */
+
+.intro-inner.dissolve .intro-title,
+.intro-inner.dissolve .intro-line {
+  animation: text-dissolve 2.8s ease-out forwards;
+}
+
+.intro-inner.dissolve .intro-line:nth-of-type(1) { animation-delay: 0.1s; }
+.intro-inner.dissolve .intro-line:nth-of-type(2) { animation-delay: 0.25s; }
+.intro-inner.dissolve .intro-line:nth-of-type(3) { animation-delay: 0.4s; }
+.intro-inner.dissolve .intro-line:nth-of-type(4) { animation-delay: 0.55s; }
+
+/* Each typed character */
+.intro-line .char,
+.intro-title .char {
+  display: inline-block;
+  white-space: pre;
+}
+
+/* Character-level dissolve */
+.dissolve-char {
+  animation: char-dissolve 25s ease-out forwards;
+}
+
+@keyframes char-dissolve {
+  0% {
+    opacity: 1;
+    filter: blur(0px);
+    transform: translateY(0px);
+  }
+  40% {
+    opacity: 0.85;
+    filter: blur(1.5px);
+    transform: translateY(1px);
+  }
+  70% {
+    opacity: 0.4;
+    filter: blur(5px);
+    transform: translateY(4px);
+  }
+  100% {
+    opacity: 0;
+    filter: blur(9px);
+    transform: translateY(10px);
+  }
+}
+
+/* Optional fade-out of entire intro (keep this from before) */
+.intro-screen.fade-out {
+  opacity: 0;
+  pointer-events: none;
+}
+
+
 * {
   box-sizing: border-box;
 }

@@ -7,6 +7,25 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
+        <!-- Intro Screen -->
+    <div class="intro-screen" id="intro-screen">
+    <!-- Rain overlay -->
+    <div class="rain-layer"></div>
+
+    <div class="intro-inner">
+        <h1 class="intro-title handwriting" data-text="Reflective City"></h1>
+
+        <div class="intro-body">
+        <p class="intro-line handwriting" data-text="This thesis begins with a feeling familiar to many who grew up in rapidly developing cities: the disorientation of returning home and realizing that the places that shaped us have vanished. As skylines rise and districts are rebuilt, the environmental cues that once grounded our memories dissolve, creating a widening gap between the physical city and the one we carry inside us. This gap raises a deeper question: what happens to memory when the landscape that held it disappears?"></p>
+        <p class="intro-line handwriting" data-text="Taoyuan, Taiwan, is a city defined by industrial parks, logistics hubs, and its proximity to Taipei, has undergone one of the fastest transformations in the country. With the launch of the Taoyuan Aerotropolis plan, thousands of hectares were rezoned for airport-centered development. Entire neighborhoods were cleared; farmland and family homes were absorbed into an emerging financial district. In every sweep of excavation, soil covered not only agricultural land but also the stories, rhythms, and futures of the people who lived there."></p>
+        <p class="intro-line handwriting" data-text="Amid these shifts, this project turns to one of Taoyuan’s most characteristic landscapes: the 埤塘 (pond). More than remnants of an agricultural past, these ponds act as sensory anchors. The sites of humidity, reflection, sound, and ecological life that once imprinted themselves onto daily experience. They serve as emotional and mnemonic cues that endure even when the built environment does not."></p>
+        <p class="intro-line handwriting" data-text="This thesis proposes a Human-Centered Digital Twin (H-DT) that translates pond-based sensory logics into interactive systems for present-day residents. Instead of treating the pond as a vanished landscape, the twin treats its hydrological behaviors, including humidity gradients, reflective light, and ecological sound, as active mediators of human presence and spatial perception. These sensory cues become data-driven conditions that influence how human agents learn, navigate, and annotate urban space. By engaging with the digital twin, residents can participate in reconstructing the affective and ecological qualities that once grounded Taoyuan, even if the original ponds no longer exist. Through this approach, the digital twin becomes a platform for co-creating new forms of familiarity within a city that continues to shift beneath its inhabitants."></p>
+        </div>
+    </div>
+    </div>
+
+
+
    <div id="overlay-wrapper"></div>
      <!-- Simple header bar (like the reference site) -->
   <header class="site-header site-header-index">
@@ -124,5 +143,105 @@
     <script src="https://unpkg.com/jquery.ripples/dist/jquery.ripples-min.js"></script>
     <script src="water.js"></script>
 
- </body>
+    <script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const titleEl = document.querySelector(".intro-title");
+        const paragraphEls = document.querySelectorAll(".intro-line");
+        const introScreen = document.getElementById("intro-screen");
+        const introInner = document.querySelector(".intro-inner");
+
+        const charDelay = 18;        // speed per character for body
+        const paragraphPause = 400;  // pause between paragraphs
+        const titleDelay = 40;       // slower for title
+
+        let dissolveActive = false;  // becomes true after first paragraph is done
+
+        // Type text into element by creating <span class="char"> for each character
+        function typeElement(el, delayPerChar) {
+        return new Promise(resolve => {
+            const text = el.dataset.text || "";
+            el.textContent = ""; // clear any existing content
+
+            let i = 0;
+            const interval = setInterval(() => {
+            const ch = text.charAt(i);
+
+            const span = document.createElement("span");
+            span.classList.add("char");
+            span.textContent = ch === " " ? " " : ch;
+            el.appendChild(span);
+
+            // If dissolve has already started, new chars should also dissolve
+            if (dissolveActive) {
+                const maxRandomDelay = 3.0; // seconds
+                const delay = Math.random() * maxRandomDelay;
+                span.style.animationDelay = `${delay}s`;
+                span.classList.add("dissolve-char");
+            }
+
+            i++;
+            if (i >= text.length) {
+                clearInterval(interval);
+                resolve();
+            }
+            }, delayPerChar);
+        });
+        }
+
+        function startCharacterDissolve() {
+        if (dissolveActive) return; // don’t run twice
+        dissolveActive = true;
+
+        // turn off rain movement when dissolve begins
+        if (introScreen) {
+            introScreen.classList.add("rain-off");
+        }
+
+        const chars = introInner.querySelectorAll(".char");
+        const maxRandomDelay = 3.0; // seconds
+
+        chars.forEach(span => {
+            const delay = Math.random() * maxRandomDelay;
+            span.style.animationDelay = `${delay}s`;
+            span.classList.add("dissolve-char");
+        });
+        }
+
+        async function runIntroTyping() {
+        // 1) Type title
+        await typeElement(titleEl, titleDelay);
+
+        if (paragraphEls.length === 0) return;
+
+        // 2) Type first paragraph
+        await typeElement(paragraphEls[0], charDelay);
+
+        // 3) Start dissolve after the first line is out
+        setTimeout(startCharacterDissolve, 500);
+
+        // 4) Continue typing remaining paragraphs
+        for (let i = 1; i < paragraphEls.length; i++) {
+            await new Promise(r => setTimeout(r, paragraphPause));
+            await typeElement(paragraphEls[i], charDelay);
+        }
+        }
+
+        // Click anywhere on the intro screen to enter the homepage
+        if (introScreen) {
+        introScreen.addEventListener("click", () => {
+            introScreen.classList.add("fade-out");
+            // Optional: fully remove from layout after fade
+            setTimeout(() => {
+            introScreen.style.display = "none";
+            }, 1300); // match your CSS transition (~1.2s)
+        });
+        }
+
+        runIntroTyping();
+    });
+    </script>
+
+
+
+</body>
 </html>
